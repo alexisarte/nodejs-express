@@ -9,7 +9,7 @@ Definir una API para gestionar nuestro equipo Pokémon
 - Intercambiar el orden de nuestros Pokémon
 
 #Rest Design:
-- Añadir Pokémon: /team/pokemons
+- Añadir Pokémon: POST /team/pokemons
 - Consultar Equipo: GET /team
 - Eliminar Pokémon: DELETE /team/pokemons/:id
 - Intercambiar el orden de nuestro Pokémon: PUT /team 
