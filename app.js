@@ -10,6 +10,22 @@ app.get('/', (req, res) => {
     res.status(200).send('Hello World!');
 });
 
+app.post('/team/pokemons', () => {
+    res.status(200).send('Hello World!');
+});
+
+app.get('/team', () => {
+    res.status(200).send('Hello World!');
+});
+
+app.delete('/team/pokemons/:pokeid', () => {
+    res.status(200).send('Hello World!');
+});
+
+app.put('/team', () => {
+    res.status(200).send('Hello World!');
+});
+
 app.listen(port, () => {
     console.log('Server started at port 3000')
 });
