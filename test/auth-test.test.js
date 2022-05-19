@@ -25,7 +25,7 @@ describe('Suite de pruebas auth', () => {
                 chai.request(app)
                     .get('/team')
                     // enviar header
-                    .set('Autorization', `JWT ${res.body.token}`)
+                    .set('Authorization', `JWT ${res.body.token}`)
                     .end((err, res) => {
                         chai.assert.equal(res.statusCode, 200);
                         done();
