@@ -1,5 +1,8 @@
 const express = require('express');
 const passport = require('passport');
+const jwt = require('jsonwebtoken');
+const usersController = require('./controllers/users');
+
 require('./auth')(passport);
 
 const app = express();
@@ -14,11 +17,17 @@ app.get('/', (req, res) => {
 
 app.post('/login', (req, res) => {
     //Comprobamos credenciales
-    // Si son validas, generamos un JWT y lo devolvemos
-    // Sino, error
-    res.status(200).json(
-        { token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.XbPfbIHMI6arZ3Y922BhjWgQzWXcXNrz0ogtVhfEd2o'}
-    )
+    usersController.checkUserCredentials(req.body.user, req.body.password, (err, result) => {
+        // Si no son validas, error
+        if (!result) {
+            res.status(401).json({ message: 'Invalid credentials' });
+        }
+        // Si son validas, generamos un JWT y lo devolvemos
+        const token = jwt.sign({ userId: req.body.user })
+        res.status(200).json(
+            { token: token }
+        )
+    })
 });
 
 app.post('/team/pokemons', (req, res) => {
@@ -26,7 +35,7 @@ app.post('/team/pokemons', (req, res) => {
 });
 
 // authenticate => Middelware predefinido de passport
-app.get('/team', passport.authenticate('jwt', {session: false}), (req, res) => {
+app.get('/team', passport.authenticate('jwt', { session: false }), (req, res) => {
     res.status(200).send('Hello World!');
 });
 
