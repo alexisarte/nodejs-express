@@ -17,11 +17,37 @@ describe('Suite de pruebas auth', () => {
                 done();
             });
     });
-    it('should return 200 when jwt is valid', (done) => {
+
+    it('should return 400 when no data is provided', (done) => {
         chai.request(app)
             .post('/login')
             .end((err, res) => {
-                // Cuando la llamada no tiene correctamente la llave
+                //Expect valid login
+                chai.assert.equal(res.statusCode, 400);
+                done();
+            });
+    });
+
+    it('should return 200 and token for succesful login', (done) => {
+        chai.request(app)
+            .post('/login')
+            .set('content-type', 'application/json')
+            .send({ user: 'alexisarte', password: '1234' })
+            .end((err, res) => {
+                //Expect valid login
+                chai.assert.equal(res.statusCode, 200);
+                done();
+            });
+    });
+
+    it('should return 200 when jwt is valid', (done) => {
+        chai.request(app)
+            .post('/login')
+            .set('content-type', 'application/json')
+            .send({ user: 'alexisarte', password: '1234' })
+            .end((err, res) => {
+                //Expect valid login
+                chai.assert.equal(res.statusCode, 200);
                 chai.request(app)
                     .get('/team')
                     // enviar header
