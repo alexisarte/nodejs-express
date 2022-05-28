@@ -3,23 +3,31 @@ const router = express.Router();
 const passport = require('passport');
 require('../auth')(passport);
 
+const teamsController = require('../controllers/teams');
+const {getUser} = require('../controllers/users');
+
 // authenticate => Middelware predefinido de passport
 router.route('/')
-    .get(passport.authenticate('jwt', { session: false }), (req, res, next) => {
-        res.status(200).send('Hello World!');
-    })
+    .get(passport.authenticate('jwt', { session: false }),
+        (req, res, next) => {
+            let user = getUser(req.user.userId);
+            res.status(200).json({
+                trainer: user.userName,
+                team: teamsController.getTeamOfUser(req.user.userId)
+            })
+        })
     .put((req, res) => {
-        res.status(200).send('Hello World!');
-    });
+        teamsController.setTeam(req.body.user, req.body.team);
+    })
 
 router.route('/pokemons')
     .post((req, res) => {
         res.status(200).send('Hello World!');
-    });
+    })
 
 router.route('/pokemons/:pokeid')
     .delete(() => {
         res.status(200).send('Hello World!');
-    });
+    })
 
 exports.router = router;
