@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 // Controllers
 const usersController = require('../controllers/users');
 usersController.registerUser('alexisarte', '1234');
+usersController.registerUser('mikelarte', '1234');
 
 // Ruta como una entidad y despues las operaciones
 router.route('/')
