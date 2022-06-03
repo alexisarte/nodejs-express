@@ -49,7 +49,7 @@ router.route('/pokemons')
 
 router.route('/pokemons/:pokeid')
     .delete(() => {
-        res.status(200).send('Hello World!');
+        res.status(200).send('Pokemon deleted!');
     })
 
 exports.router = router;

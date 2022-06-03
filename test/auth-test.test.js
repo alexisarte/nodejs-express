@@ -3,8 +3,15 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 
 chai.use(chaiHttp);
+const usersController = require('../controllers/users');
 
 const app = require('../app').app;
+
+before((done) => {
+    usersController.registerUser('alexisarte', '1234');
+    usersController.registerUser('mikelarte', '1234');
+    done();
+})
 
 describe('Suite de pruebas auth', () => {
     // no autorizado 403
@@ -57,5 +64,9 @@ describe('Suite de pruebas auth', () => {
                         done();
                     });
             });
+    });
+    after((done) => {
+        usersController.cleanUpUsers()
+        done();
     });
 });
