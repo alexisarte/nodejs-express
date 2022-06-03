@@ -40,7 +40,7 @@ router.route('/pokemons')
                 .catch(function (error) {
                     // handle error
                     console.log(error);
-                    res.status(400).json({message: error});
+                    res.status(400).json({ message: error });
                 })
                 .then(function () {
                     // always executed
@@ -48,8 +48,10 @@ router.route('/pokemons')
         })
 
 router.route('/pokemons/:pokeid')
-    .delete(() => {
-        res.status(200).send('Pokemon deleted!');
-    })
+    .delete(passport.authenticate('jwt', { session: false }),
+        (req, res) => {
+            teamsController.deletePokemonAt(req.user.userId, req.params.pokeid);
+            res.status(200).send();
+        })
 
 exports.router = router;

@@ -9,7 +9,7 @@ const app = require('../app').app;
 
 before((done) => {
     usersController.registerUser('alexisarte', '1234');
-    usersController.registerUser('mikelarte', '1234');    
+    usersController.registerUser('mikelarte', '1234');
     done();
 })
 
@@ -86,6 +86,44 @@ describe('Suite de pruebas teams', () => {
                                 chai.assert.equal(res.body.team[0].name, pokemonName);
                                 chai.assert.equal(res.body.team[0].pokedexNumber, 1);
                                 done();
+                            });
+                    });
+            });
+    });
+    it('should return if deleted the pokemon', (done) => {
+        // Cuando la llamada no tiene correctamente la llave
+        let pokemonName = 'Bulbasaur'
+        chai.request(app)
+            .post('/auth/login')
+            .set('content-type', 'application/json')
+            .send({ user: 'alexisarte', password: '1234' })
+            .end((err, res) => {
+                let token = res.body.token;
+                //Expect valid login
+                chai.assert.equal(res.statusCode, 200);
+                chai.request(app)
+                    .put('/teams')
+                    // enviar header
+                    .send({ team: team })
+                    .set('Authorization', `JWT ${token}`)
+                    .end((err, res) => {
+                        chai.request(app)
+                            .delete('/pokemons/1')
+                            // enviar header
+                            .set('Authorization', `JWT ${token}`)
+                            .end((err, res) => {
+                                chai.request(app)
+                                    .get('/teams')
+                                    // enviar header
+                                    .set('Authorization', `JWT ${token}`)
+                                    .end((err, res) => {
+                                        // tiene equipo con Charizard y Blastoise
+                                        // {trainer: 'alexisarte', team: [pokemon]}
+                                        chai.assert.equal(res.statusCode, 200);
+                                        chai.assert.equal(res.body.trainer, 'alexisarte');
+                                        chai.assert.equal(res.body.team.length, team.length - 1);
+                                        done();
+                                    });
                             });
                     });
             });

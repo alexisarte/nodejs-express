@@ -6,8 +6,6 @@ const passport = require('passport');
 const authRoutes = require('./routers/auth').router;
 const teamsRoutes = require('./routers/teams').router;
 
-require('./auth')(passport);
-
 const app = express();
 //plugin de express para poder los datos json correctamente
 app.use(bodyParser.json());
