@@ -1,24 +1,20 @@
 const express = require('express');
-const bodyParser = require('body-parser');
-const passport = require('passport');
+const middlewares = require('./middlewares');
 
 // Routes
-const authRoutes = require('./routers/auth').router;
-const teamsRoutes = require('./routers/teams').router;
+const authRoutes = require('./auth/auth.router').router;
+const teamsRoutes = require('./teams/teams.router').router;
 
 const app = express();
-//plugin de express para poder los datos json correctamente
-app.use(bodyParser.json());
-
 const port = 3000;
 
+middlewares.setupMiddlewares(app);
 app.get('/', (req, res) => {
     // '/' para que se ejecute en la raiz del proyecto
     // req es la request, la peticion
     // res es la respuesta
     res.status(200).send('Hello World!');
 });
-
 app.use('/auth', authRoutes);
 app.use('/teams', teamsRoutes);
 
