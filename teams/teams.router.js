@@ -1,52 +1,16 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const axios = require('axios').default;
 
-const teamsController = require('./teams.controller');
-const { getUser } = require('../auth/users.controller');
+const teamsHttpHandler = require("./teams.http");
 
 // authenticate => Middelware predefinido de passport
-router.route('/')
-    .get((req, res, next) => {
-        console.log('GET');
-            let user = getUser(req.user.userId);
-            res.status(200).json({
-                trainer: user.userName,
-                team: teamsController.getTeamOfUser(req.user.userId)
-            })
-        })
-    .put((req, res) => {
-            teamsController.setTeam(req.user.userId, req.body.team);
-            res.status(200).send();
-        })
+router
+    .route("/")
+    .get(teamsHttpHandler.getTeamFromUser)
+    .put(teamsHttpHandler.setTeamFromUser);
 
-router.route('/pokemons')
-    .post((req, res) => {
-            let pokemonName = req.body.name;
-            console.log('calling pokeapi');
-            axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemonName.toLowerCase()}`)
-                .then(function (response) {
-                    // handle success
-                    let pokemon = {
-                        name: pokemonName,
-                        pokedexNumber: response.data.id
-                    }
-                    res.status(201).json(pokemon)
-                })
-                .catch(function (error) {
-                    // handle error
-                    console.log(error);
-                    res.status(400).json({ message: error });
-                })
-                .then(function () {
-                    // always executed
-                });
-        })
+router.route("/pokemons").post(teamsHttpHandler.addPokemonToTeam);
 
-router.route('/pokemons/:pokeid')
-    .delete((req, res) => {
-            teamsController.deletePokemonAt(req.user.userId, req.params.pokeid);
-            res.status(200).send();
-        })
+router.route("/pokemons/:pokeid").delete(teamsHttpHandler.deletePokemonToTeam);
 
 exports.router = router;
