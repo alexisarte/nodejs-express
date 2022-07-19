@@ -1,7 +1,7 @@
 const uuid = require('uuid');
 const crypto = require('../tools/crypto');
 const teams = require('../teams/teams.controller');
-    
+
 let userDatabase = {};
 // userId -> password
 
@@ -14,6 +14,7 @@ const registerUser = (userName, password) => {
     // Guardar en la base de datos nuestro usuario
     let userId = uuid.v4();
     userDatabase[userId] = {
+        userId: userId,
         userName: userName,
         password: hashedPwd
     }
