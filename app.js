@@ -1,5 +1,6 @@
 const express = require('express');
 const middlewares = require('./middlewares');
+require('./database');
 
 // Routes
 const authRoutes = require('./auth/auth.router').router;
@@ -10,7 +11,6 @@ const port = 3000;
 
 middlewares.setupMiddlewares(app);
 app.get('/', (req, res) => {
-    // '/' para que se ejecute en la raiz del proyecto
     // req es la request, la peticion
     // res es la respuesta
     res.status(200).send('Hello World!');

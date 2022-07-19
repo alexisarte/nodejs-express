@@ -1,3 +1,8 @@
+const mongoose = require('mongoose');
+const { to } = require('../tools/to');
+const TeamsModel = mongoose.model('TeamsModel',
+    { userId: String, team: [] });
+
 let teamsDatabase = {};
 
 const cleanUpTeam = () => {
@@ -10,7 +15,12 @@ const cleanUpTeam = () => {
 }
 
 const bootstrapTeam = (userId) => {
-    teamsDatabase[userId] = [];
+    return new Promise(async (resolve, reject) => {
+        let newTeam = new TeamsModel({userId: userId, team: []});
+        await newTeam.save();
+        teamsDatabase[userId] = [];
+        resolve();
+    });
 }
 
 const getTeamOfUser = (userId) => {
@@ -22,7 +32,7 @@ const getTeamOfUser = (userId) => {
 const addPokemon = (userId, pokemon) => {
     return new Promise((resolve, reject) => {
         if (teamsDatabase[userId].length == 6) {
-            reject();
+            reject('Already have 6 pokemon');
         } else {
             teamsDatabase[userId].push(pokemon);
             resolve();
@@ -31,14 +41,19 @@ const addPokemon = (userId, pokemon) => {
 }
 
 const deletePokemonAt = (userId, index) => {
-    console.log('DELETE', userId, index);
-    if (teamsDatabase[userId][index]) {
-        teamsDatabase[userId].splice(index, 1);
-    }
+    return new Promise((resolve, reject) => {
+        if (teamsDatabase[userId][index]) {
+            teamsDatabase[userId].splice(index, 1);
+        }
+        resolve();
+    });
 }
 
 const setTeam = (userId, team) => {
-    teamsDatabase[userId] = team;
+    return new Promise((resolve, reject) => {
+        teamsDatabase[userId] = team;
+        resolve();
+    });
 }
 
 exports.bootstrapTeam = bootstrapTeam;

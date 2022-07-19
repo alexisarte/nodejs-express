@@ -1,20 +1,23 @@
-// Autenticacion => determinar quien es el usuario?
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 
 chai.use(chaiHttp);
 const usersController = require('../users.controller');
+const teamsController = require('../../teams/teams.controller');
 
 const app = require('../../app').app;
 
-before((done) => {
-    usersController.registerUser('alexisarte', '1234');
-    usersController.registerUser('mikelarte', '1234');
-    done();
+beforeEach(async () => {
+    await usersController.registerUser('alexisarte', '1234');
+    await usersController.registerUser('mikelarte', '4321');
+})
+
+afterEach(async () => {
+    await usersController.cleanUpUsers();
+    await teamsController.cleanUpTeam();
 })
 
 describe('Suite de pruebas auth', () => {
-    // no autorizado 403
     it('should return 401 when no jwt token available', (done) => {
         // Cuando la llamada no tiene correctamente la llave
         chai.request(app)
@@ -57,16 +60,11 @@ describe('Suite de pruebas auth', () => {
                 chai.assert.equal(res.statusCode, 200);
                 chai.request(app)
                     .get('/teams')
-                    // enviar header
                     .set('Authorization', `JWT ${res.body.token}`)
                     .end((err, res) => {
                         chai.assert.equal(res.statusCode, 200);
                         done();
                     });
             });
-    });
-    after((done) => {
-        usersController.cleanUpUsers()
-        done();
     });
 });

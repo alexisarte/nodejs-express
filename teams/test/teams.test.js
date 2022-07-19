@@ -7,13 +7,13 @@ const teamsController = require('../teams.controller');
 
 const app = require('../../app').app;
 
-before((done) => {
-    usersController.registerUser('alexisarte', '1234');
-    usersController.registerUser('mikelarte', '1234');
-    done();
+beforeEach(async () => {
+    await usersController.registerUser('alexisarte', '1234');
+    await usersController.registerUser('mikelarte', '4321');
 })
 
 afterEach(async () => {
+    await usersController.cleanUpUsers();
     await teamsController.cleanUpTeam();
 })
 
@@ -24,7 +24,7 @@ describe('Suite de pruebas teams', () => {
         chai.request(app)
             .post('/auth/login')
             .set('content-type', 'application/json')
-            .send({ user: 'alexisarte', password: '1234' })
+            .send({ user: 'mikelarte', password: '4321' })
             .end((err, res) => {
                 let token = res.body.token;
                 //Expect valid login
@@ -41,12 +41,12 @@ describe('Suite de pruebas teams', () => {
                             .set('Authorization', `JWT ${token}`)
                             .end((err, res) => {
                                 // tiene equipo con Charizard y Blastoise
-                                // {trainer: 'alexisarte', team: [pokemon]}
+                                // {trainer: 'mikelarte', team: [pokemon]}
                                 chai.assert.equal(res.statusCode, 200);
-                                chai.assert.equal(res.body.trainer, 'alexisarte');
+                                chai.assert.equal(res.body.trainer, 'mikelarte');
                                 chai.assert.equal(res.body.team.length, team.length);
-                                chai.assert.equal(res.body.team[0], team[0].name);
-                                chai.assert.equal(res.body.team[1], team[1].name);
+                                chai.assert.equal(res.body.team[0].name, team[0].name);
+                                chai.assert.equal(res.body.team[1].name, team[1].name);
                                 done();
                             });
                     });
@@ -54,12 +54,11 @@ describe('Suite de pruebas teams', () => {
     });
 
     it('should return the pokedex number', (done) => {
-        // Cuando la llamada no tiene correctamente la llave
         let team = [{ name: 'Charizard' }, { name: 'Blastoise' }, { name: 'Pikachu' }]
         chai.request(app)
             .post('/auth/login')
             .set('content-type', 'application/json')
-            .send({ user: 'alexisarte', password: '1234' })
+            .send({ user: 'mikelarte', password: '4321' })
             .end((err, res) => {
                 let token = res.body.token;
                 //Expect valid login
@@ -78,12 +77,10 @@ describe('Suite de pruebas teams', () => {
                                     .set('Authorization', `JWT ${token}`)
                                     .end((err, res) => {
                                         // tiene equipo con Charizard y Blastoise
-                                        // {trainer: 'alexisarte', team: [pokemon]}
+                                        // {trainer: 'mikelarte', team: [pokemon]}
                                         chai.assert.equal(res.statusCode, 200);
-                                        chai.assert.equal(res.body.trainer, 'alexisarte');
-                                        chai.assert.equal(res.body.team.length, 1);
-                                        chai.assert.equal(res.body.team[0].name, pokemonName);
-                                        chai.assert.equal(res.body.team[0].pokedexNumber, 1);
+                                        chai.assert.equal(res.body.trainer, 'mikelarte');
+                                        chai.assert.equal(res.body.team.length, team.length - 1);
                                         done();
                                     });
                             });
@@ -97,7 +94,7 @@ describe('Suite de pruebas teams', () => {
         chai.request(app)
             .post('/auth/login')
             .set('content-type', 'application/json')
-            .send({ user: 'alexisarte', password: '1234' })
+            .send({ user: 'mikelarte', password: '4321' })
             .end((err, res) => {
                 let token = res.body.token;
                 //Expect valid login
@@ -112,10 +109,12 @@ describe('Suite de pruebas teams', () => {
                             .set('Authorization', `JWT ${token}`)
                             .end((err, res) => {
                                 // tiene equipo con Charizard y Blastoise
-                                // {trainer: 'alexisarte', team: [pokemon]}
+                                // {trainer: 'mikelarte', team: [pokemon]}
                                 chai.assert.equal(res.statusCode, 200);
-                                chai.assert.equal(res.body.trainer, 'alexisarte');
-                                chai.assert.equal(res.body.team.length, team.length - 1);
+                                chai.assert.equal(res.body.trainer, 'mikelarte');
+                                chai.assert.equal(res.body.team.length, 1);
+                                chai.assert.equal(res.body.team[0].name, pokemonName);
+                                chai.assert.equal(res.body.team[0].pokedexNumber, 1);
                                 done();
                             });
                     });
@@ -135,7 +134,7 @@ describe('Suite de pruebas teams', () => {
         chai.request(app)
             .post('/auth/login')
             .set('content-type', 'application/json')
-            .send({ user: 'alexisarte', password: '1234' })
+            .send({ user: 'mikelarte', password: '4321' })
             .end((err, res) => {
                 let token = res.body.token;
                 //Expect valid login
@@ -150,14 +149,10 @@ describe('Suite de pruebas teams', () => {
                             .send({ name: "Vibraba" })
                             .set('Authorization', `JWT ${token}`)
                             .end((err, res) => {
-                            
+                                chai.assert.equal(res.statusCode, 400);
                             });
                     });
             });
     });
 
-    after((done) => {
-        usersController.cleanUpUsers()
-        done();
-    });
 });
