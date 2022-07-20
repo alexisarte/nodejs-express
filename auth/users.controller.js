@@ -6,7 +6,7 @@ const UserModel = mongoose.model('UserModel',
     { userName: String, password: String, userId: String });
 
 const cleanUpUsers = () => {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         await UserModel.deleteMany({}).exec();
         resolve();
     });
